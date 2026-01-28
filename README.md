@@ -13,3 +13,18 @@ venv\Scripts\activate
 ```
 source venv/bin/activate
 ```
+
+# Install Requirements
+```
+pip install -r requirements.txt
+```
+
+# Build Docker Image in root directory
+```
+docker build -t helpdesk .
+```
+
+# Run Docker Container in root directory
+```
+docker run -p 7500:7500 helpdesk
+```
