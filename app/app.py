@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, make_response
 from database import db
 from models import Ticket, User
+from seed import seed_data
 
 app = Flask(__name__)
 
@@ -11,7 +12,8 @@ db.init_app(app)
 
 # create all tables
 with app.app_context():
-    db.create_all()
+    # seed tables with fake data
+    seed_data()
 
 @app.route('/')
 def home():
