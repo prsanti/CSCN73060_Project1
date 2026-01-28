@@ -6,8 +6,37 @@ import os
 
 fake = Faker()
 
+def load_images(files):
+    images = []
+    
+    base_dir = os.path.dirname(__file__)
+    # set directory to images
+    images_dir = os.path.join(base_dir, 'images')
+    
+    for fname in files:
+        # set directory path
+        full_path = os.path.join(images_dir, fname)
+        
+        try:
+            with open(full_path, 'rb') as f:
+                images.append(f.read())
+                print(f"Loaded {fname} successfully.")
+        except FileNotFoundError:
+            print(f"WARNING: {fname} not found.")
+    
+    return images
+
 def seed_data():
     print("--- SEEDING DATABASE ---")
+    
+    # load test images
+    target_files = ['test-img.png', 'test-img-2.jpg']
+    images = load_images(target_files)
+    
+    # create random binary if images do not load
+    if not images:
+        print("No real images found. Using random noise as fallback.")
+        images.append(os.urandom(1024))
     
     # drop all existing tables
     db.drop_all()
@@ -40,11 +69,16 @@ def seed_data():
     
     # generate 1000 fake tickets
     for i in range(1000):
-        # 50% chance of image blob (1KB)
-        image_blob = os.urandom(1024) if i % 2 == 0 else None
+        image_blob = None
+      
+        # 50% of tickets have a random image
+        if i % 2 == 0:
+            image_blob = random.choice(images)
         
         tickets.append(Ticket(
+            # generate random title
             title=fake.sentence(nb_words=4),
+            # random text
             description=fake.text(),
             priority=random.choice(['Low', 'Medium', 'High', 'Critical']),
             employeeID=random.choice(employee_ids),

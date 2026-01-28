@@ -6,3 +6,6 @@
 ./app/models/__pycache__
 
 */instance
+
+.DS_Store
+app/.DS_Store
