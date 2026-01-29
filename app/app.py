@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, make_response
-from database import db
+from modules.database.database import db
 from models import Ticket, User
-from seed import seed_data
+from modules.database.seed import seed_data
 
 app = Flask(__name__)
 

@@ -1,4 +1,4 @@
-from database import db
+from modules.database.database import db
 from models import User, Ticket
 from faker import Faker
 import random

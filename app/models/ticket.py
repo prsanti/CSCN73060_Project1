@@ -1,4 +1,4 @@
-from database import db
+from modules.database.database import db
 from datetime import datetime
 
 class Ticket(db.Model):
