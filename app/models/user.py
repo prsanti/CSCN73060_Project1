@@ -13,7 +13,7 @@ class User(db.Model):
     def to_dict(self):
         return {
             "userID": self.userID,
-            "username": self.name,
+            "username": self.username,
             "role": self.role,
             "created_at": self.created_at.isoformat() if self.created_at else None
         }

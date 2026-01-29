@@ -35,5 +35,5 @@ class Ticket(db.Model):
             "priority": self.priority,
             "isAssigned": self.isAssigned,
             "created_at": self.created_at.isoformat() if self.created_at else None,
-            "isComplete": self.isComplete,
+            "isComplete": self.isComplete
         }
