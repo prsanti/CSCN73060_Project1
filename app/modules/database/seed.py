@@ -50,11 +50,11 @@ def seed_data():
     
     # generate 50 technicians
     for i in range(50):
-        users.append(User(name=fake.name(), password='123', role='technician'))
+        users.append(User(username=fake.name(), password='123', role='technician'))
 
     # generate 450 Employees
     for i in range(450):
-        users.append(User(name=fake.name(), password='123', role='employee'))
+        users.append(User(username=fake.name(), password='123', role='employee'))
 
     # add users to db
     db.session.add_all(users)
@@ -74,6 +74,12 @@ def seed_data():
         # 50% of tickets have a random image
         if i % 2 == 0:
             image_blob = random.choice(images)
+            
+        isComplete = False
+        
+        # 33% of tickets are completed
+        if i % 3 == 0:
+            isComplete = True
         
         tickets.append(Ticket(
             # generate random title
@@ -82,7 +88,8 @@ def seed_data():
             description=fake.text(),
             priority=random.choice(['Low', 'Medium', 'High', 'Critical']),
             employeeID=random.choice(employee_ids),
-            image=image_blob
+            image=image_blob,
+            isComplete=isComplete
         ))
 
     # add tickets to db
