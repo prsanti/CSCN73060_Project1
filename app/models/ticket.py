@@ -18,6 +18,8 @@ class Ticket(db.Model):
     image = db.Column(db.LargeBinary, nullable=True)
 
     isAssigned = db.Column(db.Boolean, default=False)
+    
+    isComplete = db.Column(db.Boolean, default=False)
 
     # relationship helpers
     employee = db.relationship('User', foreign_keys=[employeeID], backref='created_tickets')
@@ -32,5 +34,6 @@ class Ticket(db.Model):
             "description": self.description,
             "priority": self.priority,
             "isAssigned": self.isAssigned,
-            "created_at": self.created_at.isoformat() if self.created_at else None
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "isComplete": self.isComplete,
         }
