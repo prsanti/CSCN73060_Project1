@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Register | SolveIt{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-brand auth-brand-center">
+      <img src="{{ url_for('static', filename='images/solveit.png') }}" alt="SolveIt logo" class="auth-logo auth-logo-lg">
+    </div>
+
+    <h1 class="auth-title">Sign Up</h1>
+    <p class="auth-subtitle">Create a new account</p>
+
+    <form method="POST" action="register" class="auth-form">
+      <label class="label" for="name">Full Name</label>
+      <input class="input" id="name" name="name" type="text" placeholder="Your name" required>
+
+      <label class="label" for="email">Email</label>
+      <input class="input" id="email" name="email" type="email" placeholder="name@example.com" required>
+
+      <label class="label" for="role">Role</label>
+      <select class="input" id="role" name="role" required>
+        <option value="employee" selected>Employee</option>
+        <option value="technician">Technician</option>
+      </select>
+
+      <label class="label" for="password">Password</label>
+      <input class="input" id="password" name="password" type="password" placeholder="Create a password" required>
+
+      <label class="label" for="confirm_password">Confirm Password</label>
+      <input class="input" id="confirm_password" name="confirm_password" type="password" placeholder="Confirm password" required>
+
+      <button class="btn btn-block" type="submit">Create account</button>
+    </form>
+
+    <div class="auth-footer auth-footer-center">
+      <span>Already have an account?</span>
+      <a class="link" href="login">Log in →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Log In | SolveIt{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-brand auth-brand-center">
+      <img src="{{ url_for('static', filename='images/solveit.png') }}" alt="SolveIt logo" class="auth-logo auth-logo-lg">
+
+      <div class="auth-brand-text">
+      </div>
+    </div>
+
+    <h1 class="auth-title">Log In</h1>
+    <p class="auth-subtitle">Continue to SolveIt</p>
+
+    <form method="POST" action="login" class="auth-form">
+      <label class="label" for="email">Email</label>
+      <input class="input" id="email" name="email" type="email" placeholder="name@example.com" required>
+
+     <label class="label" for="password">Password</label>
+
+
+      <input class="input" id="password" name="password" type="password" placeholder="••••••••" required>
+
+      <button class="btn btn-block" type="submit">Log in</button>
+    </form>
+
+    <div class="auth-footer auth-footer-center">
+      <span>New to SolveIt?</span>
+      <a class="link" href="register">Sign up →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -19,6 +19,14 @@ with app.app_context():
 def home():
     return render_template('index.html')
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
 # get all tickets
 @app.route('/tickets', methods=['GET'])
 def get_tickets():
@@ -28,3 +36,11 @@ def get_tickets():
   
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=7500, debug=True)
+    
+    
+
+
+
+
+
+
