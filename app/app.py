@@ -19,13 +19,13 @@ with app.app_context():
 def home():
     return render_template('index.html')
 
-@app.route('/auth/login')
+@app.route('/login')
 def login():
-    return render_template('login.html')
+    return render_template('/auth/login.html')
 
-@app.route('/auth/register')
+@app.route('/register')
 def register():
-    return render_template('register.html')
+    return render_template('/auth/register.html')
 
 # get all tickets
 @app.route('/tickets', methods=['GET'])
