@@ -19,11 +19,11 @@ with app.app_context():
 def home():
     return render_template('index.html')
 
-@app.route('/login')
+@app.route('/auth/login')
 def login():
     return render_template('login.html')
 
-@app.route('/register')
+@app.route('/auth/register')
 def register():
     return render_template('register.html')
 
