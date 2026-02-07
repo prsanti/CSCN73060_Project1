@@ -1,23 +1,153 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helpdesk Dashboard</title>
-    <style>
+{% extends "base.html" %}
+{% block title %}Dashboard | SolveIt{% endblock %}
 
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Helpdesk</h1>
-    </header>
+{% block content %}
+<div class="dashboard">
 
-    <main>
-        
-    </main>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="{{ url_for('static', filename='images/solveit.png') }}" class="sidebar-logo" alt="SolveIt">
+    </div>
 
-    <footer>
-    </footer>
-</body>
-</html>
+    <nav class="sidebar-nav">
+      <a class="active" href="#">Tickets</a>
+      <a href="#">My Profile</a>
+      <a href="#">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">Tickets</h1>
+      </div>
+
+      <div class="topbar-actions">
+        <form method="GET" action="" class="search-form">
+          <input
+            class="input search"
+            type="text"
+            name="q"
+            placeholder="Search tickets"
+            value="{{ request.args.get('q','') }}"
+          >
+        </form>
+
+        <a class="btn" href="/tickets/new">+ Create Ticket</a>
+      </div>
+    </div>
+
+    <!-- Filters (same page) -->
+    <form method="GET" action="" class="filters-bar">
+      <input type="hidden" name="q" value="{{ request.args.get('q','') }}">
+
+      <div class="filter-inline">
+        <label class="filter-label-inline" for="status">Status</label>
+        <select class="input filter-select-inline" id="status" name="status">
+          <option value="all" {% if request.args.get('status','all')=='all' %}selected{% endif %}>All</option>
+          <option value="unopened" {% if request.args.get('status')=='unopened' %}selected{% endif %}>Unopened</option>
+          <option value="in_progress" {% if request.args.get('status')=='in_progress' %}selected{% endif %}>In Progress</option>
+          <option value="closed" {% if request.args.get('status')=='closed' %}selected{% endif %}>Closed</option>
+        </select>
+      </div>
+
+      <div class="filter-inline">
+        <label class="filter-label-inline" for="priority">Priority</label>
+        <select class="input filter-select-inline" id="priority" name="priority">
+          <option value="all" {% if request.args.get('priority','all')=='all' %}selected{% endif %}>All</option>
+          <option value="low" {% if request.args.get('priority')=='low' %}selected{% endif %}>Low</option>
+          <option value="medium" {% if request.args.get('priority')=='medium' %}selected{% endif %}>Medium</option>
+          <option value="urgent" {% if request.args.get('priority')=='urgent' %}selected{% endif %}>Urgent</option>
+        </select>
+      </div>
+
+      <div class="filter-inline">
+        <label class="filter-label-inline" for="sort">Sort</label>
+        <select class="input filter-select-inline" id="sort" name="sort">
+          <option value="newest" {% if request.args.get('sort','newest')=='newest' %}selected{% endif %}>Newest</option>
+          <option value="oldest" {% if request.args.get('sort')=='oldest' %}selected{% endif %}>Oldest</option>
+          <option value="priority_high" {% if request.args.get('sort')=='priority_high' %}selected{% endif %}>Priority: High → Low</option>
+          <option value="priority_low" {% if request.args.get('sort')=='priority_low' %}selected{% endif %}>Priority: Low → High</option>
+          <option value="status" {% if request.args.get('sort')=='status' %}selected{% endif %}>Status</option>
+        </select>
+      </div>
+
+      <div class="filter-actions-inline">
+        <a class="btn btn-secondary" href="?q={{ request.args.get('q','') }}">Reset</a>
+        <button class="btn" type="submit">Apply</button>
+      </div>
+    </form>
+
+    <!-- Tickets Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Ticket List</div>
+        <div class="card-meta">Showing 1–20</div>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Priority</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td class="link">001</td>
+            <td>Example</td>
+            <td>Testing</td>
+            <td><span class="badge urgent">Urgent</span></td>
+            <td>02/01/26</td>
+            <td><span class="badge open">Unopened</span></td>
+            <td>
+              {% if role == "technician" %}
+                <button class="btn-sm">Claim</button>
+              {% else %}
+                <button class="btn-sm secondary">View</button>
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="link">002</td>
+            <td>Wi-Fi issue</td>
+            <td>Cannot connect to office Wi-Fi.</td>
+            <td><span class="badge medium">Medium</span></td>
+            <td>02/01/26</td>
+            <td><span class="badge progress">In Progress</span></td>
+            <td><button class="btn-sm secondary">View</button></td>
+          </tr>
+
+          <tr>
+            <td class="link">003</td>
+            <td>Password reset</td>
+            <td>Locked out of email account.</td>
+            <td><span class="badge low">Low</span></td>
+            <td>01/31/26</td>
+            <td><span class="badge closed">Closed</span></td>
+            <td><button class="btn-sm secondary">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <button class="btn btn-secondary" type="button">Previous</button>
+        <div class="table-pages">Page 1</div>
+        <button class="btn btn-secondary" type="button">Next</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+{% endblock %}
