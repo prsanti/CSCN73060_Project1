@@ -1,0 +1,427 @@
+{% extends "base.html" %}
+{% block title %}Create Ticket | SolveIt{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="{{ url_for('static', filename='images/solveit.png') }}" class="sidebar-logo" alt="SolveIt">
+      <span class="sidebar-name">SolveIt</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/">Tickets</a>
+      <a class="active" href="/createtickets">Create Ticket</a>
+      <a href="#">My Profile</a>
+      <a href="#">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar create-topbar">
+      <div class="topbar-left">
+        <div class="create-crumbs">
+          <a class="crumb-link" href="/">Tickets</a>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-current">Create</span>
+        </div>
+
+        <h1 class="page-title">Create Ticket</h1>
+        <p class="page-subtitle">Submit a new help desk request with clear details so a technician can resolve it faster.</p>
+      </div>
+
+      <div class="topbar-actions create-topbar-actions">
+        <a class="back-btn" href="/" aria-label="Back to Tickets">
+          <span class="back-icon">←</span>
+          <span class="back-text">Back to Tickets</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Create Ticket Layout -->
+    <div class="create-layout">
+
+      <!-- Main Form Card -->
+      <div class="card create-card">
+        <div class="card-header create-card-header">
+          <div class="card-title">Ticket Details</div>
+          <div class="card-meta">Fields marked <span class="req">*</span> are required.</div>
+        </div>
+
+        <div class="form-wrap create-form-wrap">
+          <form method="POST" action="/tickets" enctype="multipart/form-data" class="ticket-form">
+
+            
+
+            <div class="form-grid">
+              <div class="form-group full">
+                <label class="label" for="title">Title <span class="req">*</span></label>
+                <input class="input" id="title" name="title" type="text"
+                       placeholder="e.g., Cannot access email on Outlook Web" required>
+              </div>
+
+              <div class="form-group">
+                <label class="label" for="priority">Priority <span class="req">*</span></label>
+                <select class="input" id="priority" name="priority" required>
+                  <option value="" selected disabled>Select priority</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="label" for="category">Category</label>
+                <select class="input" id="category" name="category">
+                  <option value="" selected>Choose (optional)</option>
+                  <option value="hardware">Hardware</option>
+                  <option value="software">Software</option>
+                  <option value="network">Network</option>
+                  <option value="account">Account</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group full">
+                <label class="label" for="description">Description <span class="req">*</span></label>
+                <textarea class="input textarea" id="description" name="description" rows="7"
+                  placeholder="What happened? What did you expect? Steps to reproduce? Any error message? Device/browser?"
+                  required></textarea>
+
+                <div class="desc-hints">
+                  <div class="hint-pill">Expected vs actual</div>
+                  <div class="hint-pill">Steps to reproduce</div>
+                  <div class="hint-pill">Error message</div>
+                  <div class="hint-pill">Device + browser</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="label" for="attachment">Attachment (optional)</label>
+                <div class="file-drop">
+                  <input class="input file" id="attachment" name="attachment" type="file" accept="image/*">
+                  <div class="file-drop-text">
+                    Add a screenshot (PNG/JPG). It helps technicians diagnose faster.
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="label" for="contact">Preferred Contact (optional)</label>
+                <input class="input" id="contact" name="contact" type="text"
+                       placeholder="Email or phone (if different)">
+               
+              </div>
+            </div>
+
+            <div class="form-actions create-actions">
+              <a class="btn btn-secondary" href="/">Cancel</a>
+              <button class="btn primary-cta" type="submit">Submit Ticket</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Side Help Card -->
+      <div class="card side-card create-side-card">
+        <div class="card-header create-card-header">
+          <div class="card-title">Quick Guide</div>
+          <div class="card-meta">What technicians need</div>
+        </div>
+
+        <div class="side-content">
+          <div class="tip">
+            <div class="tip-title">1) Good title</div>
+            <div class="tip-text">Keep it short but specific (system + problem).</div>
+          </div>
+
+          <div class="tip">
+            <div class="tip-title">2) Describe the issue</div>
+            <div class="tip-text">Include what you expected vs what happened.</div>
+          </div>
+
+          <div class="divider-line"></div>
+
+          <div class="mini-preview">
+            <div class="preview-title">Example Title</div>
+            <div class="preview-box">Cannot access email on Outlook Web</div>
+
+            <div class="preview-title">Example Description</div>
+            <div class="preview-box">
+              Expected: Inbox loads normally.<br>
+              Actual: Error 500 appears after login.<br>
+              Steps: 1) Go to Outlook Web 2) Sign in 3) Error shows.<br>
+              Device: Windows 11, Chrome.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<style>
+/* ---------- Create Ticket Page Enhancements (page-only) ---------- */
+
+.create-topbar{
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  margin-bottom: 14px;
+}
+
+.create-crumbs{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #666;
+}
+
+.crumb-link{
+  color: #1a5cff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.crumb-link:hover{ text-decoration: underline; }
+
+.crumb-sep{ color: #999; }
+.crumb-current{ font-weight: 700; color:#333; }
+
+.create-topbar-actions{
+  border-left: none !important;
+  padding-left: 0 !important;
+}
+
+.back-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #e6e6e6;
+  background: #fff;
+  color: #111;
+  text-decoration: none;
+  font-weight: 800;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.back-btn:hover{
+  background: #fafafa;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.07);
+  transform: translateY(-1px);
+}
+
+.back-icon{
+  width: 28px;
+  height: 28px;
+  display:grid;
+  place-items:center;
+  border-radius: 10px;
+  background: rgba(50,2,243,0.08);
+  color: #3202f3;
+  font-weight: 900;
+}
+
+.back-text{
+  font-size: 13px;
+}
+
+/* Layout */
+.create-layout{
+  display: grid;
+  grid-template-columns: 1.7fr 0.9fr;
+  gap: 14px;
+  align-items: start;
+}
+
+/* Card polish */
+.create-card{
+  box-shadow: 0 10px 26px rgba(0,0,0,0.05);
+}
+
+.create-card-header{
+  background: #fff;
+}
+
+.create-form-wrap{
+  padding: 14px;
+}
+
+/* Info banner */
+.info-banner{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #e6e6e6;
+  background: #fafafa;
+  margin-bottom: 12px;
+}
+
+.info-dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #3202f3;
+}
+
+.info-text{
+  font-size: 13px;
+  color: #333;
+  font-weight: 700;
+}
+
+/* Form grid */
+.form-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+
+.form-group.full{
+  grid-column: 1 / -1;
+}
+
+.req{
+  color: #a40000;
+  font-weight: 900;
+}
+
+.textarea{
+  resize: vertical;
+  min-height: 150px;
+}
+
+.desc-hints{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.hint-pill{
+  font-size: 12px;
+  font-weight: 800;
+  color: #333;
+  border: 1px solid #e6e6e6;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.file-drop{
+  border: 1px dashed #d9d9d9;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+}
+
+.file{
+  padding: 10px 12px;
+}
+
+.file-drop-text{
+  font-size: 12px;
+  color: #666;
+  margin-top: 8px;
+}
+
+/* Actions */
+.create-actions{
+  display:flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  margin-top: 12px;
+}
+
+.primary-cta{
+  box-shadow: 0 10px 24px rgba(50,2,243,0.22);
+}
+
+/* Side card polish */
+.create-side-card{
+  position: sticky;
+  top: 14px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.05);
+}
+
+.side-card .side-content{
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.tip-title{
+  font-weight: 900;
+  margin-bottom: 2px;
+}
+
+.tip-text{
+  color:#555;
+  font-size: 13px;
+}
+
+.divider-line{
+  height: 1px;
+  background: #eee;
+  margin: 4px 0;
+}
+
+.preview-title{
+  font-weight: 900;
+  font-size: 12px;
+  color:#444;
+  margin-top: 6px;
+}
+
+.preview-box{
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  background: #fafafa;
+  font-size: 13px;
+  color:#333;
+  line-height: 1.35;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .create-layout{
+    grid-template-columns: 1fr;
+  }
+  .form-grid{
+    grid-template-columns: 1fr;
+  }
+  .create-side-card{
+    position: static;
+  }
+  .create-topbar{
+    padding: 12px;
+  }
+}
+</style>
+{% endblock %}

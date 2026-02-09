@@ -21,11 +21,17 @@ def home():
 
 @app.route('/login')
 def login():
-    return render_template('/auth/login.html')
+    return render_template('auth/login.html')
 
 @app.route('/register')
 def register():
-    return render_template('/auth/register.html')
+    return render_template('auth/register.html')
+
+
+@app.route("/createtickets")
+def new_ticket():
+    return render_template('auth/create_ticket.html')
+
 
 # get all tickets
 @app.route('/tickets', methods=['GET'])
@@ -34,6 +40,12 @@ def get_tickets():
     # return all tickets as a json
     return jsonify([t.to_dict() for t in tickets]), 200
   
+@app.route('/tickets', methods=['POST'])
+def create_ticket():
+    data = request.form  
+    
+    return jsonify({"message": "Ticket received", "data": data.to_dict()}), 201
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=7500, debug=True)
     
