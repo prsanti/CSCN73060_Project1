@@ -26,7 +26,6 @@ def load_images(files):
     
     return images
 
-# todo: need to create tickets where some are assigned to random technicians
 def seed_data():
     print("--- SEEDING DATABASE ---")
     
@@ -67,6 +66,7 @@ def seed_data():
     # Get valid id that belongs to an employee
     # use the id to assign to random ticket
     employee_ids = [u.userID for u in User.query.filter_by(role='employee').all()]
+    technician_ids = [u.userID for u in User.query.filter_by(role='technician').all()]
 
     print("Generating 1000 Tickets...")
     tickets = []
@@ -85,6 +85,14 @@ def seed_data():
         if i % 3 == 0:
             isComplete = True
         
+        technicianID = None
+        isAssigned = False
+        
+        # 70% of tickets assigned to random technician
+        if random.random() < 0.7:
+            technicianID = random.choice(technician_ids)
+            isAssigned = True
+
         tickets.append(Ticket(
             # generate random title
             title=fake.sentence(nb_words=4),
@@ -92,6 +100,8 @@ def seed_data():
             description=fake.text(),
             priority=random.choice(['Low', 'Medium', 'High', 'Critical']),
             employeeID=random.choice(employee_ids),
+            technicianID=technicianID,
+            isAssigned=isAssigned,
             image=image_blob,
             isComplete=isComplete
         ))

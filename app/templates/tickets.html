@@ -63,7 +63,7 @@
                         <th>Title</th>
                         <th>Description</th>
                         <th>Priority</th>
-                        <th>Assigned?</th>
+                        <th>Technician</th>
                         <th>Created At</th>
                     </tr>
                 </thead>
@@ -75,10 +75,10 @@
                             <td>{{ ticket.description[:50] }}...</td> 
                             <td class="priority-{{ ticket.priority }}">{{ ticket.priority }}</td>
                             <td>
-                                {% if ticket.isAssigned %}
-                                    <span style="color:green">Yes ({{ ticket.employeeID }})</span>
+                                {% if ticket.isAssigned and ticket.technician %}
+                                    <span style="color:green">{{ ticket.technician.username }} ({{ ticket.technicianID }})</span>
                                 {% else %}
-                                    <span style="color:red">No</span>
+                                    <span style="color:red">Unassigned</span>
                                 {% endif %}
                             </td>
                             <td>{{ ticket.created_at.strftime('%Y-%m-%d') }}</td>
