@@ -20,7 +20,7 @@ with app.app_context():
 def home():
     return render_template('index.html')
 
-# Route for the HTML Page (separate from the JSON API)
+# get all tickets
 @app.route('/tickets', methods=['GET'])
 def get_tickets():
     query = Ticket.query
