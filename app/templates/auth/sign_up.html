@@ -1,57 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Test</title>
+    <title>Sign Up Test</title>
 </head>
 <body>
 
-    <h2>Login</h2>
+    <h2>Sign Up (Employees Only)</h2>
 
     <div id="message" style="color: red;"></div>
 
-    <form id="loginForm">
+    <form id="signupForm">
         <label>Username:</label><br>
         <input type="text" id="username" name="username" required><br><br>
 
         <label>Password:</label><br>
         <input type="password" id="password" name="password" required><br><br>
 
-        <button type="submit">Login</button>
+        <button type="submit">Create Account</button>
     </form>
 
-    <script>
-        const form = document.getElementById('loginForm');
-        const messageDiv = document.getElementById('message');
+    <p>Already have an account? <a href="/auth/login">Login here</a></p>
 
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Stop the form from submitting normally
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            // 1. Get data from inputs
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
 
-            // 2. Send POST request with JSON
             try {
-                const response = await fetch('/auth/login', {
+                const response = await fetch('/auth/sign_up', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: username, password: password })
                 });
 
                 const result = await response.json();
 
-                // 3. Check response
                 if (response.ok) {
-                    // Success: Redirect user to the dashboard
+                    // Success! Redirect to Login page
+                    alert("Account created! Redirecting to login...");
                     window.location.href = result.redirect;
                 } else {
-                    // Error: Show message (e.g., "Invalid credentials")
+                    // Error (e.g., Username taken)
                     messageDiv.innerText = "Error: " + result.error;
                 }
             } catch (error) {
-                messageDiv.innerText = "Network error. Is the server running?";
+                messageDiv.innerText = "Network error.";
             }
         });
     </script>
