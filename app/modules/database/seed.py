@@ -26,6 +26,7 @@ def load_images(files):
     
     return images
 
+# todo: need to create tickets where some are assigned to random technicians
 def seed_data():
     print("--- SEEDING DATABASE ---")
     
