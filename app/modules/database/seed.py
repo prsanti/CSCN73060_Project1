@@ -48,10 +48,14 @@ def seed_data():
     
     users = []
     
-    # generate 50 technicians
+    # manually create technician and employee accounts for testing
     test_user = User(username='testguy', password='123', role='technician')
     users.append(test_user)
-
+    
+    test_employee_user = User(username='testemployee', password='123', role='employee')
+    users.append(test_employee_user)
+   
+    # generate 50 technicians
     for i in range(50):
         users.append(User(username=fake.name(), password='123', role='technician'))
 
@@ -67,9 +71,46 @@ def seed_data():
     # use the id to assign to random ticket
     employee_ids = [u.userID for u in User.query.filter_by(role='employee').all()]
     technician_ids = [u.userID for u in User.query.filter_by(role='technician').all()]
+    
+    # Get specific IDs for testing
+    test_technician_id = User.query.filter_by(username='testguy').first().userID
+    test_employee_id = User.query.filter_by(username='testemployee').first().userID
 
     print("Generating 1000 Tickets...")
     tickets = []
+    
+    # create specific tickets for testemployee
+    # Completed ticket
+    tickets.append(Ticket(
+        title="Test Employee Completed Ticket",
+        description="This is a completed ticket created by testemployee.",
+        priority="Low",
+        employeeID=test_employee_id,
+        technicianID=test_technician_id,
+        isAssigned=True,
+        isComplete=True
+    ))
+    
+    # Unassigned ticket
+    tickets.append(Ticket(
+        title="Test Employee Unassigned Ticket",
+        description="This is an unassigned ticket created by testemployee.",
+        priority="Medium",
+        employeeID=test_employee_id,
+        isAssigned=False,
+        isComplete=False
+    ))
+    
+    # Assigned to testguy ticket
+    tickets.append(Ticket(
+        title="Test Employee Assigned Ticket",
+        description="This ticket is assigned to testguy.",
+        priority="High",
+        employeeID=test_employee_id,
+        technicianID=test_technician_id,
+        isAssigned=True,
+        isComplete=False
+    ))
     
     # generate 1000 fake tickets
     for i in range(1000):
