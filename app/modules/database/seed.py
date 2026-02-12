@@ -48,10 +48,14 @@ def seed_data():
     
     users = []
     
-    # generate 50 technicians
+    # manually create technician and employee accounts for testing
     test_user = User(username='testguy', password='123', role='technician')
     users.append(test_user)
-
+    
+    test_employee_user = User(username='testemployee', password='123', role='employee')
+    users.append(test_employee_user)
+   
+    # generate 50 technicians
     for i in range(50):
         users.append(User(username=fake.name(), password='123', role='technician'))
 

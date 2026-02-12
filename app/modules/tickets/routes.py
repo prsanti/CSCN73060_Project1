@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, session
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
 from sqlalchemy import case, asc, desc
 from modules.database.database import db
 from models import Ticket
@@ -8,6 +8,9 @@ ticket_bp = Blueprint('tickets', __name__)
 # get all tickets
 @ticket_bp.route('/', methods=['GET'])
 def get_tickets():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+        
     query = Ticket.query
 
     # search for title query
@@ -48,4 +51,4 @@ def get_tickets():
     tickets = query.all()
 
     # input sort_by and order to html
-    return render_template('tickets.html', tickets=tickets, sort_by=sort_by, order=order)
+    return render_template('tickets.html', tickets=tickets, sort_by=sort_by, order=order), 200
