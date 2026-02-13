@@ -1,56 +1,71 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sign Up Test</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Sign Up | SolveIt{% endblock %}
 
-    <h2>Sign Up (Employees Only)</h2>
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
 
-    <div id="message" style="color: red;"></div>
+    <div class="auth-brand auth-brand-center">
+      <img src="{{ url_for('static', filename='images/solveit.png') }}" 
+           alt="SolveIt logo" 
+           class="auth-logo">
+    </div>
 
-    <form id="signupForm">
-        <label>Username:</label><br>
-        <input type="text" id="username" name="username" required><br><br>
+    <h1 class="auth-title">Sign Up</h1>
+    <p class="auth-subtitle">Create a new account</p>
 
-        <label>Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
+    <div id="message" class="auth-message"></div>
 
-        <button type="submit">Create Account</button>
+    <form id="signupForm" class="auth-form">
+      <label class="label">Username</label>
+      <input class="input" type="text" id="username" required>
+       <label class="label" for="role">Role</label>
+        <select class="input" type="text" id="role" name="role" placeholder="Technician, Employee" required>
+        <option value="employee" selected>Employee</option>
+        <option value="technician">Technician</option>
+         </select>
+
+      <label class="label">Password</label>
+      <input class="input" type="password" id="password" required>
+
+      <button class="btn btn-block" type="submit">Create Account</button>
     </form>
 
-    <p>Already have an account? <a href="/auth/login">Login here</a></p>
+    <div class="auth-footer">
+      <span>Already have an account?</span>
+      <a class="link" href="/auth/login">Log in →</a>
+    </div>
 
-    <script>
-        document.getElementById('signupForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('message');
+  </div>
+</div>
+{% endblock %}
 
-            try {
-                const response = await fetch('/auth/sign_up', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: username, password: password })
-                });
+{% block scripts %}
+<script>
+document.getElementById('signupForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-                const result = await response.json();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const messageDiv = document.getElementById('message');
 
-                if (response.ok) {
-                    // Success! Redirect to Login page
-                    alert("Account created! Redirecting to login...");
-                    window.location.href = result.redirect;
-                } else {
-                    // Error (e.g., Username taken)
-                    messageDiv.innerText = "Error: " + result.error;
-                }
-            } catch (error) {
-                messageDiv.innerText = "Network error.";
-            }
+    try {
+        const response = await fetch('/auth/sign_up', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
         });
-    </script>
 
-</body>
-</html>
+        const result = await response.json();
+
+        if (response.ok) {
+            window.location.href = result.redirect;
+        } else {
+            messageDiv.innerText = "Error: " + result.error;
+        }
+    } catch (error) {
+        messageDiv.innerText = "Network error.";
+    }
+});
+</script>
+{% endblock %}

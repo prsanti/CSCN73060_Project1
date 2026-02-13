@@ -1,0 +1,271 @@
+/* ===============================
+   AUTH PAGES (LOGIN / SIGN UP)
+================================ */
+.auth-page{
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #f6f7fb;
+  padding: 28px 24px 24px;   /* tighter top padding */
+}
+
+.auth-card{
+  width: 100%;
+  max-width: 460px;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 16px;
+  padding: 18px 22px 18px;   /* tighter inside padding */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* Logo block */
+.auth-brand{
+  display:flex;
+  justify-content:center;
+  margin-bottom: 10px;       /* reduce gap below logo */
+}
+
+.auth-logo{
+  width: 90px;               /* still big but not huge */
+  height: 90px;
+  object-fit: contain;
+}
+
+/* Title/subtitle tighter */
+.auth-title{
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 2px;           /* remove big top spacing */
+}
+
+.auth-subtitle{
+  margin: 0 0 10px;          /* reduce bottom spacing */
+  color: #666;
+}
+
+
+/* Error message */
+.auth-message {
+  min-height: 18px;
+  margin-bottom: 12px;
+  color: #a40000;
+  font-weight: 600;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Form layout */
+.auth-form {
+  display: grid;
+  gap: 10px;
+}
+.label{
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 2px;           
+}
+
+
+.input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #d9d9d9;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+  transition: 0.2s ease;
+}
+
+.input:focus {
+  border-color: #3202f3;
+  box-shadow: 0 0 0 4px rgba(50,2,243,0.12);
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-weight: 700;
+  font-size: 14px;
+  background: #3202f3;
+  color: #fff;
+  transition: 0.2s ease;
+}
+
+.btn:hover {
+  background: #2400b3;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Footer links */
+.auth-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding-top: 16px;
+  margin-top: 12px;
+  border-top: 1px solid #eee;
+  font-size: 13px;
+  color: #666;
+}
+
+.link {
+  color: #3202f3;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+
+/* ===============================
+   DASHBOARD BASE 
+================================ */
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f6f7fb;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #e6e6e6;
+  padding: 16px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.sidebar-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  color: #111;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.sidebar-nav a.active,
+.sidebar-nav a:hover {
+  background: #eef2ff;
+}
+
+/* Main */
+.main {
+  flex: 1;
+  padding: 24px;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* Cards */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e6e6e6;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.card-title {
+  font-weight: 800;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 14px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.table th {
+  background: #fafafa;
+  text-align: left;
+}
+
+/* Status badges */
+.badge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge.open { background:#e0ebff; color:#0033cc; }
+.badge.closed { background:#eeeeee; color:#333; }
+.badge.urgent { background:#fde2e2; color:#a40000; }
+.badge.medium { background:#fff2cc; color:#8a5b00; }
+.badge.low { background:#e7f6ea; color:#0a6b2b; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 20px;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .main {
+    padding: 16px;
+  }
+}
+

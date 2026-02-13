@@ -1,60 +1,68 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login Test</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Login | SolveIt{% endblock %}
 
-    <h2>Login</h2>
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
 
-    <div id="message" style="color: red;"></div>
+    <div class="auth-brand auth-brand-center">
+      <img src="{{ url_for('static', filename='images/solveit.png') }}" 
+           alt="SolveIt logo" 
+           class="auth-logo">
+    </div>
 
-    <form id="loginForm">
-        <label>Username:</label><br>
-        <input type="text" id="username" name="username" required><br><br>
+    <h1 class="auth-title">Log In</h1>
+    <p class="auth-subtitle">Continue to SolveIt</p>
 
-        <label>Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
+    <div id="message" class="auth-message"></div>
 
-        <button type="submit">Login</button>
+    <form id="loginForm" class="auth-form">
+      <label class="label">Username</label>
+      <input class="input" type="text" id="username" required>
+
+      <label class="label">Password</label>
+      <input class="input" type="password" id="password" required>
+
+      <button class="btn btn-block" type="submit">Log in</button>
     </form>
 
-    <script>
-        const form = document.getElementById('loginForm');
-        const messageDiv = document.getElementById('message');
+    <div class="auth-footer">
+      <span>New to SolveIt?</span>
+      <a class="link" href="/auth/sign_up">Sign up →</a>
+    </div>
 
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Stop the form from submitting normally
-            
-            // 1. Get data from inputs
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+  </div>
+</div>
+{% endblock %}
 
-            // 2. Send POST request with JSON
-            try {
-                const response = await fetch('/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username: username, password: password })
-                });
+{% block scripts %}
+<script>
+const form = document.getElementById('loginForm');
+const messageDiv = document.getElementById('message');
 
-                const result = await response.json();
+form.addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-                // 3. Check response
-                if (response.ok) {
-                    // Success: Redirect user to the dashboard
-                    window.location.href = result.redirect;
-                } else {
-                    // Error: Show message (e.g., "Invalid credentials")
-                    messageDiv.innerText = "Error: " + result.error;
-                }
-            } catch (error) {
-                messageDiv.innerText = "Network error. Is the server running?";
-            }
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    try {
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
         });
-    </script>
 
-</body>
-</html>
+        const result = await response.json();
+
+        if (response.ok) {
+            window.location.href = result.redirect;
+        } else {
+            messageDiv.innerText = "Error: " + result.error;
+        }
+    } catch (error) {
+        messageDiv.innerText = "Network error.";
+    }
+});
+</script>
+{% endblock %}
