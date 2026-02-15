@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify, session
 from modules.database.database import db
 from models import User 
+from flask import redirect
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -78,4 +79,4 @@ def dashboard():
 	if 'user_id' not in session:
 		return jsonify({'error': 'Unauthorized'}), 401
 	
-	return render_template('/auth/dashboard.html')
+	return redirect('/tickets')
