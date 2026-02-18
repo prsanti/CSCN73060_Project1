@@ -93,7 +93,8 @@
       <div class="card-header">
         <div>
           <div class="card-title">Ticket List</div>
-          <div class="card-meta">Showing 1–20</div>
+          <div class="card-meta">Showing {{ start_item }}–{{ end_item }} of {{ total }}</div>
+
         </div>
       </div>
 
@@ -169,15 +170,46 @@
       <div class="table-footer">
         <button class="btn btn-secondary" type="button">Previous</button>
 
-        <div class="pagination">
-          <button class="page-btn active" type="button">1</button>
-          <button class="page-btn" type="button">2</button>
-          <button class="page-btn" type="button">3</button>
-          <button class="page-btn" type="button">4</button>
-          <button class="page-btn" type="button">5</button>
-          <span class="page-ellipsis">…</span>
-          <button class="page-btn" type="button">10</button>
-        </div>
+        <div class="table-footer">
+
+  {% set title = request.args.get('title','') %}
+  {% set priority = request.args.get('priority','') %}
+  {% set sort_by = request.args.get('sort_by','date') %}
+  {% set order = request.args.get('order','asc') %}
+
+  {% if page > 1 %}
+    <a class="btn btn-secondary"
+       href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ page-1 }}">
+      Previous
+    </a>
+  {% else %}
+    <button class="btn btn-secondary" disabled>Previous</button>
+  {% endif %}
+
+  <div class="pagination">
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}
+        <button class="page-btn active" type="button">{{ p }}</button>
+      {% else %}
+        <a class="page-btn"
+           href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ p }}">
+          {{ p }}
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if page < total_pages %}
+    <a class="btn btn-secondary"
+       href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ page+1 }}">
+      Next
+    </a>
+  {% else %}
+    <button class="btn btn-secondary" disabled>Next</button>
+  {% endif %}
+
+</div>
+
 
         <button class="btn btn-secondary" type="button">Next</button>
       </div>

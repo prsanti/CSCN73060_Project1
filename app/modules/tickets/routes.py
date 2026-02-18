@@ -53,8 +53,24 @@ def get_tickets():
         # apply asc
         query = query.order_by(asc(sort_column))
 
-    # get query
-    tickets = query.all()
+    # Pagination
+    per_page = 20
+    page = request.args.get('page', 1, type=int)
+    if page < 1:
+        page = 1
+
+    total = query.count()
+    total_pages = (total + per_page - 1) // per_page
+    if total_pages < 1:
+        total_pages = 1
+    if page > total_pages:
+        page = total_pages
+
+    tickets = query.offset((page - 1) * per_page).limit(per_page).all()
+
+    start_item = 0 if total == 0 else (page - 1) * per_page + 1
+    end_item = min(page * per_page, total)
 
     # input sort_by and order to html
-    return render_template('tickets.html', tickets=tickets, sort_by=sort_by, order=order), 200
+    return render_template('tickets.html', tickets=tickets, sort_by=sort_by, order=order, page=page, total_pages=total_pages, total=total, start_item=start_item, end_item=end_item
+    ), 200
