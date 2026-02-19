@@ -27,7 +27,7 @@ def get_tickets():
     # filter by priority
     priority_query = request.args.get('priority')
     if priority_query:
-        query = query.filter(Ticket.priority == priority_query)
+        query = query.filter(Ticket.priority.ilike(priority_query))
 
     # sort by and order
     # default by date and desc
