@@ -4,6 +4,13 @@
 */__pycache__
 */models/__pycache__
 ./app/models/__pycache__
+./app/modules/Auth/__pycache__
+./app/modules/Auth/__pycache__/*.pyc
+./app/modules/database/__pycache__
+./app/modules/database/__pycache__/*.pyc
+./app/modules/tickets/__pycache__
+./app/modules/tickets/__pycache__/*.pyc
+*.pyc
 
 */instance
 
