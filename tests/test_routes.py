@@ -92,10 +92,10 @@ def test_get_tickets_employee_filter(client):
         
         # act
         # create ticket 1 with employee 1 id
-        ticket1 = create_ticket('Ticket 1', 'Low', employee1.userID)
+        ticket1 = create_ticket('Ticket 1', 'low', employee1.userID)
         
         # create ticket 2 with emlpoyee 2 id
-        ticket2 = create_ticket('Ticket 2', 'High', employee2.userID)
+        ticket2 = create_ticket('Ticket 2', 'high', employee2.userID)
         
         # login with employee 1
         login(client, employee1)
@@ -129,9 +129,9 @@ def test_get_tickets_technician_view_all(client):
         
         # act
         # create ticket by employee 1
-        ticket1 = create_ticket('Ticket 1', 'Low', employee1.userID)
+        ticket1 = create_ticket('Ticket 1', 'low', employee1.userID)
         # create ticket by emplyee 2
-        ticket2 = create_ticket('Ticket 2', 'High', employee2.userID)
+        ticket2 = create_ticket('Ticket 2', 'high', employee2.userID)
         
         # login with technician
         login(client, tech)
@@ -161,8 +161,8 @@ def test_filter_by_title(client):
         
         # act
         # create tickets by employee 1
-        create_ticket('Network Issue', 'High', employee1.userID)
-        create_ticket('Printer Broken', 'Low', employee1.userID)
+        create_ticket('Network Issue', 'high', employee1.userID)
+        create_ticket('Printer Broken', 'low', employee1.userID)
         
         # login with technician
         login(client, tech)
@@ -192,16 +192,16 @@ def test_filter_by_priority_critical(client):
         
         # act
         # critical tickets with different priority levels
-        create_ticket("Critical Bug", "Critical", employee1.userID)
-        create_ticket("High Bug", "High", employee1.userID)
-        create_ticket("Med Bug", "Medium", employee1.userID)
-        create_ticket("Low Bug", "Low", employee1.userID)
+        create_ticket("Critical Bug", "critical", employee1.userID)
+        create_ticket("High Bug", "high", employee1.userID)
+        create_ticket("Med Bug", "medium", employee1.userID)
+        create_ticket("Low Bug", "low", employee1.userID)
         
         login(client, tech)
 
     # assert
     # Filter by "Critical"
-    response = client.get('/tickets/?priority=Critical')
+    response = client.get('/tickets/?priority=critical')
     assert response.status_code == 200
     data = response.get_data(as_text=True)
     
@@ -221,16 +221,16 @@ def test_filter_by_priority_high(client):
         
         # act
         # critical tickets with different priority levels
-        create_ticket("Critical Bug", "Critical", employee1.userID)
-        create_ticket("High Bug", "High", employee1.userID)
-        create_ticket("Med Bug", "Medium", employee1.userID)
-        create_ticket("Low Bug", "Low", employee1.userID)
+        create_ticket("Critical Bug", "critical", employee1.userID)
+        create_ticket("High Bug", "high", employee1.userID)
+        create_ticket("Med Bug", "medium", employee1.userID)
+        create_ticket("Low Bug", "low", employee1.userID)
         
         login(client, tech)
 
     # assert
     # Filter by "High"
-    response = client.get('/tickets/?priority=High')
+    response = client.get('/tickets/?priority=high')
     assert response.status_code == 200
     data = response.get_data(as_text=True)
     
@@ -250,16 +250,16 @@ def test_filter_by_priority_medium(client):
         
         # act
         # critical tickets with different priority levels
-        create_ticket("Critical Bug", "Critical", employee1.userID)
-        create_ticket("High Bug", "High", employee1.userID)
-        create_ticket("Med Bug", "Medium", employee1.userID)
-        create_ticket("Low Bug", "Low", employee1.userID)
+        create_ticket("Critical Bug", "critical", employee1.userID)
+        create_ticket("High Bug", "high", employee1.userID)
+        create_ticket("Med Bug", "medium", employee1.userID)
+        create_ticket("Low Bug", "low", employee1.userID)
         
         login(client, tech)
 
     # assert
     # Filter by "Medium"
-    response = client.get('/tickets/?priority=Medium')
+    response = client.get('/tickets/?priority=medium')
     assert response.status_code == 200
     data = response.get_data(as_text=True)
     
@@ -279,16 +279,16 @@ def test_filter_by_priority_low(client):
         
         # act
         # critical tickets with different priority levels
-        create_ticket("Critical Bug", "Critical", employee1.userID)
-        create_ticket("High Bug", "High", employee1.userID)
-        create_ticket("Med Bug", "Medium", employee1.userID)
-        create_ticket("Low Bug", "Low", employee1.userID)
+        create_ticket("Critical Bug", "critical", employee1.userID)
+        create_ticket("High Bug", "high", employee1.userID)
+        create_ticket("Med Bug", "medium", employee1.userID)
+        create_ticket("Low Bug", "low", employee1.userID)
         
         login(client, tech)
 
     # assert
     # Filter by "Critical"
-    response = client.get('/tickets/?priority=Low')
+    response = client.get('/tickets/?priority=low')
     assert response.status_code == 200
     data = response.get_data(as_text=True)
     
@@ -305,8 +305,8 @@ def test_sort_tickets_asc(client):
         employee1 = create_user('employee1', 'employee')
         
         # act
-        ticket1 = create_ticket('abc', 'Low', employee1.userID)
-        ticket2 = create_ticket('xyz', 'High', employee1.userID)
+        ticket1 = create_ticket('abc', 'low', employee1.userID)
+        ticket2 = create_ticket('xyz', 'high', employee1.userID)
         
         login(client, tech)
 
@@ -327,8 +327,8 @@ def test_sort_tickets_desc(client):
         employee1 = create_user('employee1', 'employee')
         
         # act
-        ticket1 = create_ticket('abc', 'Low', employee1.userID)
-        ticket2 = create_ticket('xyz', 'High', employee1.userID)
+        ticket1 = create_ticket('abc', 'low', employee1.userID)
+        ticket2 = create_ticket('xyz', 'high', employee1.userID)
         
         login(client, tech)
 
@@ -351,7 +351,7 @@ def test_page1_display(client):
         # act
         # Create 25 tickets
         for i in range(25):
-            create_ticket(f'Ticket {i}', 'Low', employee1.userID)
+            create_ticket(f'Ticket {i}', 'low', employee1.userID)
         
         login(client, tech)
 
@@ -379,7 +379,7 @@ def test_page2_display(client):
         # act
         # Create 25 tickets
         for i in range(25):
-            create_ticket(f'Ticket {i}', 'Low', employee1.userID)
+            create_ticket(f'Ticket {i}', 'low', employee1.userID)
         
         login(client, tech)
 
