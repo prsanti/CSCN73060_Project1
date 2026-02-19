@@ -5,7 +5,7 @@ from models import Ticket, User
 from modules.database.seed import seed_data
 import os
 
-from modules.Auth.routes import auth_bp
+from modules.auth.routes import auth_bp
 from modules.tickets.routes import ticket_bp
 
 app = Flask(__name__)
