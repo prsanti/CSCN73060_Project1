@@ -24,13 +24,16 @@ app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(ticket_bp, url_prefix='/tickets')
 
 # create all tables
-with app.app_context():
-    # seed tables with fake data
-    seed_data()
+#with app.app_context():
+    #seed tables with fake data
+#    seed_data()
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
 if __name__ == '__main__':
+    with app.app_context():
+    #seed tables with fake data
+        seed_data()
     app.run(host='0.0.0.0', port=7500, debug=True)
