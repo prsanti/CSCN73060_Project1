@@ -74,3 +74,28 @@ def get_tickets():
     # input sort_by and order to html
     return render_template('tickets.html', tickets=tickets, sort_by=sort_by, order=order, page=page, total_pages=total_pages, total=total, start_item=start_item, end_item=end_item
     ), 200
+
+@ticket_bp.route('/', methods=['POST'])
+def create_ticket():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login')), 302
+
+    title = request.form.get('title', '').strip()
+    description = request.form.get('description', '').strip()
+    priority = request.form.get('priority', '').strip().lower()
+
+    if not title or not description or not priority:
+        # simplest behavior: send them back
+        return redirect(url_for('tickets.get_tickets'))
+
+    new_ticket = Ticket(
+        title=title,
+        description=description,
+        priority=priority,
+        employeeID=session.get('user_id')
+    )
+    db.session.add(new_ticket)
+    db.session.commit()
+
+    # Go back to tickets list after submit
+    return redirect(url_for('tickets.get_tickets'))

@@ -12,7 +12,9 @@
 
     <nav class="sidebar-nav">
       <a class="active" href="/auth/dashboard">Tickets</a>
-      <a href="/createtickets">Create Ticket</a>
+      <a href="#" id="openCreateModalSidebar">Create Ticket</a>
+
+
     </nav>
 
     <!-- Logout at bottom -->
@@ -43,7 +45,8 @@
           >
         </form>
 
-        <a class="btn create-btn" href="/createtickets">+ Create Ticket</a>
+        <button class="btn create-btn" id="openCreateModal" type="button">+ Create Ticket </button>
+
       </div>
     </div>
 
@@ -56,10 +59,10 @@
           <label class="filter-label" for="priority">Priority</label>
           <select class="input" id="priority" name="priority">
             <option value="" {% if request.args.get('priority','') == '' %}selected{% endif %}>All Priorities</option>
-            <option value="low" {% if request.args.get('priority','')|lower == 'low' %}selected{% endif %}>Low</option>
-            <option value="medium" {% if request.args.get('priority','')|lower == 'medium' %}selected{% endif %}>Medium</option>
-            <option value="high" {% if request.args.get('priority','')|lower == 'high' %}selected{% endif %}>High</option>
-            <option value="critical" {% if request.args.get('priority','')|lower == 'critical' %}selected{% endif %}>Critical</option>
+            <option value="Low" {% if request.args.get('priority','')|lower == 'low' %}selected{% endif %}>Low</option>
+            <option value="Medium" {% if request.args.get('priority','')|lower == 'medium' %}selected{% endif %}>Medium</option>
+            <option value="High" {% if request.args.get('priority','')|lower == 'high' %}selected{% endif %}>High</option>
+            <option value="Critical" {% if request.args.get('priority','')|lower == 'critical' %}selected{% endif %}>Critical</option>
           </select>
         </div>
 
@@ -167,53 +170,131 @@
       </table>
 
      
-      <div class="table-footer">
-        <button class="btn btn-secondary" type="button">Previous</button>
+      
+     <div class="table-footer">
 
-        <div class="table-footer">
+    {% set title = request.args.get('title','') %}
+    {% set priority = request.args.get('priority','') %}
+    {% set sort_by = request.args.get('sort_by','date') %}
+    {% set order = request.args.get('order','asc') %}
 
-  {% set title = request.args.get('title','') %}
-  {% set priority = request.args.get('priority','') %}
-  {% set sort_by = request.args.get('sort_by','date') %}
-  {% set order = request.args.get('order','asc') %}
+    {% if page > 1 %}
+        <a class="btn btn-secondary"
+        href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ page-1 }}">
+        Previous
+        </a>
+    {% else %}
+        <button class="btn btn-secondary" disabled>Previous</button>
+    {% endif %}
 
-  {% if page > 1 %}
-    <a class="btn btn-secondary"
-       href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ page-1 }}">
-      Previous
-    </a>
-  {% else %}
-    <button class="btn btn-secondary" disabled>Previous</button>
+    <div class="pagination">
+
+  {% set max_visible = 5 %}
+  {% set start_page = page - 2 if page - 2 > 1 else 1 %}
+  {% set end_page = page + 2 if page + 2 < total_pages else total_pages %}
+
+  {% if start_page > 1 %}
+    <a class="page-btn"
+       href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page=1">1</a>
+    {% if start_page > 2 %}
+      <span class="page-ellipsis">...</span>
+    {% endif %}
   {% endif %}
 
-  <div class="pagination">
-    {% for p in range(1, total_pages + 1) %}
-      {% if p == page %}
-        <button class="page-btn active" type="button">{{ p }}</button>
-      {% else %}
-        <a class="page-btn"
-           href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ p }}">
-          {{ p }}
-        </a>
-      {% endif %}
-    {% endfor %}
-  </div>
+  {% for p in range(start_page, end_page + 1) %}
+    {% if p == page %}
+      <button class="page-btn active" type="button">{{ p }}</button>
+    {% else %}
+      <a class="page-btn"
+         href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ p }}">
+        {{ p }}
+      </a>
+    {% endif %}
+  {% endfor %}
 
-  {% if page < total_pages %}
-    <a class="btn btn-secondary"
-       href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ page+1 }}">
-      Next
+  {% if end_page < total_pages %}
+    {% if end_page < total_pages - 1 %}
+      <span class="page-ellipsis">...</span>
+    {% endif %}
+    <a class="page-btn"
+       href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ total_pages }}">
+      {{ total_pages }}
     </a>
-  {% else %}
-    <button class="btn btn-secondary" disabled>Next</button>
   {% endif %}
 
 </div>
 
 
-        <button class="btn btn-secondary" type="button">Next</button>
-      </div>
+    {% if page < total_pages %}
+        <a class="btn btn-secondary"
+        href="?title={{ title }}&priority={{ priority }}&sort_by={{ sort_by }}&order={{ order }}&page={{ page+1 }}">
+        Next
+        </a>
+    {% else %}
+        <button class="btn btn-secondary" disabled>Next</button>
+    {% endif %}
+
     </div>
+
+
+            <button class="btn btn-secondary" type="button">Next</button>
+        </div>
+        </div>
+
+    <!-- CREATE TICKET MODAL -->
+<div class="modal-overlay" id="createModalOverlay" aria-hidden="true">
+  <div class="modal" role="dialog">
+
+    <div class="modal-header">
+      <h2 class="modal-title">Create Ticket</h2>
+      <button class="modal-close" id="closeCreateModal" type="button">×</button>
+    </div>
+
+    <div class="modal-body">
+      <form method="POST" action="{{ url_for('tickets.create_ticket') }}" enctype="multipart/form-data">
+
+        <div class="modal-field">
+          <label class="modal-label">Title *</label>
+          <input class="input modal-input" name="title" required>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">Description *</label>
+          <textarea class="input modal-textarea" name="description" required></textarea>
+        </div>
+
+        <div class="modal-grid">
+          <div class="modal-field">
+            <label class="modal-label">Priority *</label>
+            <select class="input modal-input" name="priority" required>
+              <option value="">Select</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+          <div class="modal-field">
+           <label class="modal-label">Image </label>
+           <input class="input modal-input" type="file" name="attachment" accept="image/*">
+           </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="cancelCreateModal" type="button">
+            Cancel
+          </button>
+          <button class="btn" type="submit">
+            Submit Ticket
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+ </div>
 
   </main>
 </div>
@@ -232,5 +313,50 @@
       alert("Network error while logging out.");
     }
   });
+  
+  const openBtn = document.getElementById("openCreateModal");
+ const openBtnSidebar = document.getElementById("openCreateModalSidebar");
+  const overlay = document.getElementById("createModalOverlay");
+  const closeBtn = document.getElementById("closeCreateModal");
+  const cancelBtn = document.getElementById("cancelCreateModal");
+
+  function openModal() {
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden", "false");
+    // focus first input
+    const firstInput = overlay.querySelector("input[name='title']");
+    if (firstInput) firstInput.focus();
+  }
+  function closeModal() {
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden", "true");
+  }
+
+  if (openBtn) openBtn.addEventListener("click", openModal);
+
+ if (openBtnSidebar) {
+  openBtnSidebar.addEventListener("click", (e) => {
+    e.preventDefault(); // stops jumping to top because href="#"
+    openModal();
+  });
+}
+
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+
+  // Click outside modal closes it
+  if (overlay) {
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeModal();
+    });
+  }
+
+  // ESC closes it
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("show")) {
+      closeModal();
+    }
+  });
+
 </script>
 {% endblock %}

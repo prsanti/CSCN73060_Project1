@@ -403,3 +403,136 @@ body{
   }
   .search{ width:100%; }
 }
+
+/* =========================
+   MODAL (Create Ticket)
+========================= */
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  z-index: 9999;
+}
+
+.modal-overlay.show{
+  display: flex;
+}
+
+.modal{
+  width: 100%;
+  max-width: 980px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e6e6e6;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  overflow: hidden;
+}
+
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-title{
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.modal-close{
+  border: none;
+  background: transparent;
+  font-size: 28px;
+  font-weight: 900;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+.modal-close:hover{
+  background: #f2f2f2;
+}
+
+.modal-body{
+  padding: 18px;
+  max-height: 78vh;
+  overflow: auto;
+}
+
+.modal-field{
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.modal-label{
+  font-size: 13px;
+  font-weight: 900;
+  color: #333;
+}
+
+.req{
+  color: #a40000;
+}
+
+.modal-input{
+  width: 100%;
+}
+
+.modal-textarea{
+  width: 100%;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.modal-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.upload-row{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  border: 1px dashed #d9d9d9;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fafafa;
+}
+
+.modal-file{
+  background: #fff;
+}
+
+.upload-hint{
+  color: #666;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.modal-footer{
+  display:flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+}
+
+@media (max-width: 900px){
+  .modal{
+    max-width: 100%;
+  }
+  .modal-grid{
+    grid-template-columns: 1fr;
+  }
+}

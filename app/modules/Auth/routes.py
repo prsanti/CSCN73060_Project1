@@ -80,3 +80,7 @@ def dashboard():
 		return jsonify({'error': 'Unauthorized'}), 401
 	
 	return redirect('/tickets')
+
+@auth_bp.route("/createtickets")
+def createtickets():
+    return render_template("auth/create_ticket.html")
