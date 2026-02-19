@@ -9,7 +9,7 @@ class Ticket(db.Model):
     technicianID = db.Column(db.Integer, db.ForeignKey('users.userID'), nullable=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    priority = db.Column(db.Enum('Low', 'Medium', 'High', 'Critical', name='ticket_priority'), default='Medium')
+    priority = db.Column(db.Enum('low', 'medium', 'high', 'critical', name='ticket_priority'), default='medium')
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -84,7 +84,7 @@ def seed_data():
     tickets.append(Ticket(
         title="Test Employee Completed Ticket",
         description="This is a completed ticket created by testemployee.",
-        priority="Low",
+        priority="low",
         employeeID=test_employee_id,
         technicianID=test_technician_id,
         isAssigned=True,
@@ -95,7 +95,7 @@ def seed_data():
     tickets.append(Ticket(
         title="Test Employee Unassigned Ticket",
         description="This is an unassigned ticket created by testemployee.",
-        priority="Medium",
+        priority="medium",
         employeeID=test_employee_id,
         isAssigned=False,
         isComplete=False
@@ -105,7 +105,7 @@ def seed_data():
     tickets.append(Ticket(
         title="Test Employee Assigned Ticket",
         description="This ticket is assigned to testguy.",
-        priority="High",
+        priority="high",
         employeeID=test_employee_id,
         technicianID=test_technician_id,
         isAssigned=True,
@@ -139,7 +139,7 @@ def seed_data():
             title=fake.sentence(nb_words=4),
             # random text
             description=fake.text(),
-            priority=random.choice(['Low', 'Medium', 'High', 'Critical']),
+            priority=random.choice(['low', 'medium', 'high', 'critical']),
             employeeID=random.choice(employee_ids),
             technicianID=technicianID,
             isAssigned=isAssigned,
