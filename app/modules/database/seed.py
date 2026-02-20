@@ -3,6 +3,7 @@ from models import User, Ticket
 from faker import Faker
 import random
 import os
+import csv
 
 fake = Faker()
 
@@ -63,7 +64,16 @@ def seed_data():
     for i in range(450):
         users.append(User(username=fake.name(), password='123', role='employee'))
 
-    # add users to db
+    # export users to csv for Jmeter testing
+    print("Exporting users to test_users.csv...")
+    csv_file_path = os.path.join(os.path.dirname(__file__), '../../../test_users.csv')
+    with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['username', 'password', 'role'])  # CSV Headers
+        for u in users:
+            writer.writerow([u.username, u.password, u.role])
+    
+
     db.session.add_all(users)
     db.session.commit()
 
@@ -150,4 +160,17 @@ def seed_data():
     # add tickets to db
     db.session.add_all(tickets)
     db.session.commit()
+
+    print("Exporting search terms to search_terms.csv...")
+    search_csv_path = os.path.join(os.path.dirname(__file__), '../../../search_terms.csv')
+    with open(search_csv_path, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['search_keyword'])
+        for t in tickets:
+            # Split the title into words, remove periods/punctuation, and pick a random word
+            words = t.title.replace('.', '').replace(',', '').split()
+            if words: # Failsafe in case a title is somehow empty
+                random_word = random.choice(words)
+                writer.writerow([random_word])
+
     print("--- SEEDING COMPLETE ---")
