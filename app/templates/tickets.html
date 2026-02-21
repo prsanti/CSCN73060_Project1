@@ -117,7 +117,7 @@
         <tbody>
           {% if tickets %}
             {% for ticket in tickets %}
-              <tr>
+              <tr onclick="window.location.href='{{ url_for('tickets.get_ticket_detail', ticket_id=ticket.ticketID) }}'" style="cursor: pointer;">
                 <td class="link">{{ ticket.ticketID }}</td>
                 <td>{{ ticket.title }}</td>
 

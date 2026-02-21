@@ -17,5 +17,10 @@ instance/*
 ./instance
 instance/project6.db
 
+./pytest_cache
+*/pytest_cache
+./vscode
+*/vscode
+
 .DS_Store
 app/.DS_Store

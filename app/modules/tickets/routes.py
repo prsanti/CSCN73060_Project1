@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
+import io
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, send_file
+
 from sqlalchemy import case, asc, desc
 from modules.database.database import db
 from models import Ticket
@@ -88,14 +90,78 @@ def create_ticket():
         # simplest behavior: send them back
         return redirect(url_for('tickets.get_tickets'))
 
+    image_data = None
+    if 'attachment' in request.files:
+        file = request.files['attachment']
+        if file and file.filename != '':
+            image_data = file.read()
+
     new_ticket = Ticket(
         title=title,
         description=description,
         priority=priority,
-        employeeID=session.get('user_id')
+        employeeID=session.get('user_id'),
+        image=image_data
     )
     db.session.add(new_ticket)
     db.session.commit()
 
     # Go back to tickets list after submit
     return redirect(url_for('tickets.get_tickets'))
+
+@ticket_bp.route('/<int:ticket_id>', methods=['GET'])
+def get_ticket_detail(ticket_id):
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login')), 302
+    
+    ticket = Ticket.query.get(ticket_id)
+    if not ticket:
+        return redirect(url_for('tickets.get_tickets'))
+        
+    return render_template('ticket_detail.html', ticket=ticket, current_user_id=session.get('user_id'), role=session.get('role'))
+
+@ticket_bp.route('/<int:ticket_id>', methods=['PATCH'])
+def update_ticket(ticket_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    ticket = Ticket.query.get(ticket_id)
+    if not ticket:
+        return jsonify({'error': 'Ticket not found'}), 404
+    
+    current_user_id = session.get('user_id')
+    role = session.get('role')
+    
+    # Check permissions: only allow if user is the creator or a technician
+    if role == 'employee' and ticket.employeeID != current_user_id:
+         return jsonify({'error': 'Unauthorized'}), 403
+
+    data = request.get_json()
+    
+    if 'description' in data:
+        ticket.description = data['description'].strip()
+    
+    if 'priority' in data:
+        priority = data['priority'].strip().lower()
+        if priority in ['low', 'medium', 'high', 'critical']:
+            ticket.priority = priority
+            
+    try:
+        db.session.commit()
+        return jsonify({'message': 'Ticket updated successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@ticket_bp.route('/<int:ticket_id>/image')
+def get_ticket_image(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+    if ticket.image:
+        return send_file(
+            io.BytesIO(ticket.image),
+            mimetype='image/jpeg',
+            as_attachment=False,
+            download_name=f'ticket_{ticket_id}.jpg'
+        )
+    return '', 404
