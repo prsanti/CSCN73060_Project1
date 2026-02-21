@@ -154,6 +154,28 @@ def update_ticket(ticket_id):
         return jsonify({'error': str(e)}), 500
 
 
+@ticket_bp.route('/<int:ticket_id>/assign', methods=['PUT'])
+def assign_ticket(ticket_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Check if user is a technician
+    if session.get('role') != 'technician':
+        return jsonify({'error': 'Unauthorized: Only technicians can assign tickets'}), 403
+    
+    ticket = Ticket.query.get(ticket_id)
+    if not ticket:
+        return jsonify({'error': 'Ticket not found'}), 404
+        
+    try:
+        ticket.technicianID = session.get('user_id')
+        ticket.isAssigned = True
+        db.session.commit()
+        return jsonify({'message': 'Ticket assigned successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 @ticket_bp.route('/<int:ticket_id>/image')
 def get_ticket_image(ticket_id):
     ticket = Ticket.query.get_or_404(ticket_id)

@@ -30,6 +30,9 @@
         <p class="page-subtitle">View details for this support request.</p>
       </div>
       <div class="topbar-right">
+        {% if role == 'technician' and not ticket.technicianID %}
+          <button class="btn claim-btn" data-id="{{ ticket.ticketID }}">Claim Ticket</button>
+        {% endif %}
         <a href="{{ url_for('tickets.get_tickets') }}" class="btn btn-secondary">Back to List</a>
       </div>
     </div>
@@ -219,5 +222,31 @@
       }
     });
   }
+
+  // Claim Ticket Logic
+  document.querySelectorAll('.claim-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const ticketId = btn.getAttribute('data-id');
+          if(!confirm('Are you sure you want to claim this ticket?')) return;
+          
+          try {
+              const response = await fetch(`/tickets/${ticketId}/assign`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' }
+              });
+              
+              const data = await response.json();
+              if(response.ok) {
+                  window.location.reload();
+              } else {
+                  alert(data.error || 'Failed to claim ticket');
+              }
+          } catch (error) {
+              console.error(error);
+              alert('Network error');
+          }
+      });
+  });
 </script>
 {% endblock %}
