@@ -12,7 +12,7 @@ def load_images(files):
     
     base_dir = os.path.dirname(__file__)
     # set directory to images
-    images_dir = os.path.join(base_dir, 'images')
+    images_dir = os.path.join(base_dir, '../../static/images')
     
     for fname in files:
         # set directory path
