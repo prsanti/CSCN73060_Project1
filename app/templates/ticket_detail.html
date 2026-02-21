@@ -33,6 +33,9 @@
         {% if role == 'technician' and not ticket.technicianID %}
           <button class="btn claim-btn" data-id="{{ ticket.ticketID }}">Claim Ticket</button>
         {% endif %}
+        {% if role == 'technician' or (role == 'employee' and ticket.employeeID == current_user_id) %}
+          <button class="btn btn-secondary delete-btn" data-id="{{ ticket.ticketID }}" style="color: #a40000; border-color: #a40000;">Delete Ticket</button>
+        {% endif %}
         <a href="{{ url_for('tickets.get_tickets') }}" class="btn btn-secondary">Back to List</a>
       </div>
     </div>
@@ -228,7 +231,6 @@
       btn.addEventListener('click', async (e) => {
           e.preventDefault();
           const ticketId = btn.getAttribute('data-id');
-          if(!confirm('Are you sure you want to claim this ticket?')) return;
           
           try {
               const response = await fetch(`/tickets/${ticketId}/assign`, {
@@ -241,6 +243,31 @@
                   window.location.reload();
               } else {
                   alert(data.error || 'Failed to claim ticket');
+              }
+          } catch (error) {
+              console.error(error);
+              alert('Network error');
+          }
+      });
+  });
+
+  // Delete Ticket Logic
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const ticketId = btn.getAttribute('data-id');
+          
+          try {
+              const response = await fetch(`/tickets/${ticketId}`, {
+                  method: 'DELETE',
+                  headers: { 'Content-Type': 'application/json' }
+              });
+              
+              const data = await response.json();
+              if(response.ok) {
+                  window.location.href = "{{ url_for('tickets.get_tickets') }}";
+              } else {
+                  alert(data.error || 'Failed to delete ticket');
               }
           } catch (error) {
               console.error(error);

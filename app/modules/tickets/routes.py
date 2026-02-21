@@ -176,6 +176,30 @@ def assign_ticket(ticket_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+@ticket_bp.route('/<int:ticket_id>', methods=['DELETE'])
+def delete_ticket(ticket_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    ticket = Ticket.query.get(ticket_id)
+    if not ticket:
+        return jsonify({'error': 'Ticket not found'}), 404
+        
+    current_user_id = session.get('user_id')
+    role = session.get('role')
+    
+    # Check permissions: only allow if user is the creator or a technician
+    if role == 'employee' and ticket.employeeID != current_user_id:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    try:
+        db.session.delete(ticket)
+        db.session.commit()
+        return jsonify({'message': 'Ticket deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 @ticket_bp.route('/<int:ticket_id>/image')
 def get_ticket_image(ticket_id):
     ticket = Ticket.query.get_or_404(ticket_id)
