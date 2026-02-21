@@ -77,11 +77,14 @@ def get_tickets():
     return render_template('tickets.html', tickets=tickets, sort_by=sort_by, order=order, page=page, total_pages=total_pages, total=total, start_item=start_item, end_item=end_item
     ), 200
 
+# create ticket route
 @ticket_bp.route('/', methods=['POST'])
 def create_ticket():
+    # check if user is logged in
     if 'user_id' not in session:
         return redirect(url_for('auth.login')), 302
 
+    # get title, desc, and priority
     title = request.form.get('title', '').strip()
     description = request.form.get('description', '').strip()
     priority = request.form.get('priority', '').strip().lower()
@@ -211,21 +214,25 @@ def assign_ticket(ticket_id):
 # delete ticket route
 @ticket_bp.route('/<int:ticket_id>', methods=['DELETE'])
 def delete_ticket(ticket_id):
+    # check if user is logged in
     if 'user_id' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
     
+    # get ticket
     ticket = Ticket.query.get(ticket_id)
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
         
+    # get user role and id
     current_user_id = session.get('user_id')
     role = session.get('role')
     
-    # Check permissions: only allow if user is the creator or a technician
+    # Check permissions if user is the creator or a technician
     if role == 'employee' and ticket.employeeID != current_user_id:
         return jsonify({'error': 'Unauthorized'}), 403
     
     try:
+        # delete ticket from db
         db.session.delete(ticket)
         db.session.commit()
         return jsonify({'message': 'Ticket deleted successfully'}), 200
@@ -243,4 +250,4 @@ def get_ticket_image(ticket_id):
             as_attachment=False,
             download_name=f'ticket_{ticket_id}.jpg'
         )
-    return '', 404
+    return jsonify({'error': 'Cannot upload image'}), 500
