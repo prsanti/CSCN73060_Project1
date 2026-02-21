@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block title %}Ticket #{{ ticket.ticketID }} | SolveIt{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="{{ url_for('static', filename='images/solveit.png') }}" class="sidebar-logo" alt="SolveIt">
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/tickets">Tickets</a>
+      <!-- We can add more links here -->
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="logoutBtn" class="btn btn-secondary btn-block" type="button">Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">Ticket #{{ ticket.ticketID }}</h1>
+        <p class="page-subtitle">View details for this support request.</p>
+      </div>
+      <div class="topbar-right">
+        {% if role == 'technician' and not ticket.technicianID %}
+          <button class="btn claim-btn" data-id="{{ ticket.ticketID }}">Claim Ticket</button>
+        {% endif %}
+        {% if role == 'technician' or (role == 'employee' and ticket.employeeID == current_user_id) %}
+          <button class="btn btn-secondary delete-btn" data-id="{{ ticket.ticketID }}" style="color: #a40000; border-color: #a40000;">Delete Ticket</button>
+        {% endif %}
+        <a href="{{ url_for('tickets.get_tickets') }}" class="btn btn-secondary">Back to List</a>
+      </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">{{ ticket.title }}</div>
+            <div class="card-meta">
+                Created on {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}
+                {% if ticket.updated_at %}
+                &bull; Updated on {{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}
+                {% endif %}
+            </div>
+        </div>
+        
+        <div style="padding: 24px;">
+            <!-- Status Badges -->
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                <div>
+                    <strong>Priority:</strong>
+                    {% set p = (ticket.priority or '')|lower %}
+                    <span class="badge {{ 'critical' if p == 'critical' else ('high' if p == 'high' else ('medium' if p == 'medium' else 'low')) }}">
+                        {{ ticket.priority }}
+                    </span>
+                </div>
+                
+                <div>
+                    <strong>Status:</strong>
+                    {% if ticket.isComplete %}
+                        <span class="badge closed">Closed</span>
+                    {% elif ticket.isAssigned %}
+                        <span class="badge progress">In Progress</span>
+                    {% else %}
+                        <span class="badge unopened">Open</span>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <strong>Assigned To:</strong>
+                    {% if ticket.technician %}
+                        <span style="color:green; font-weight:800;">
+                             {{ ticket.technician.username }}
+                        </span>
+                    {% else %}
+                        <span style="color:#a40000; font-weight:800;">Unassigned</span>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <strong>Created By:</strong>
+                    <span>{{ ticket.employee.username }}</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div style="margin-bottom: 24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <h3 style="margin-top: 0;">Description</h3>
+                  {% if role == 'technician' or (role == 'employee' and ticket.employeeID == current_user_id) %}
+                  <button class="btn-sm" id="editDescriptionBtn" type="button">Edit</button>
+                  {% endif %}
+                </div>
+                
+                <p id="descriptionText" style="line-height: 1.6; white-space: pre-wrap;">{{ ticket.description }}</p>
+                
+                <form id="descriptionForm" style="display:none; margin-top:10px;">
+                  <textarea class="input" id="descriptionInput" name="description" style="width:100%; min-height:100px;">{{ ticket.description }}</textarea>
+                  <div style="margin-top:8px;">
+                    <button class="btn-sm" type="submit">Save</button>
+                    <button class="btn-sm secondary" id="cancelDescriptionBtn" type="button">Cancel</button>
+                  </div>
+                </form>
+            </div>
+
+            <!-- Priority -->
+             {% if role == 'technician' or (role == 'employee' and ticket.employeeID == current_user_id) %}
+            <div style="margin-bottom: 24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <h3>Update Priority</h3>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <select class="input" id="prioritySelect">
+                        <option value="low" {% if ticket.priority == 'low' %}selected{% endif %}>Low</option>
+                        <option value="medium" {% if ticket.priority == 'medium' %}selected{% endif %}>Medium</option>
+                        <option value="high" {% if ticket.priority == 'high' %}selected{% endif %}>High</option>
+                        <option value="critical" {% if ticket.priority == 'critical' %}selected{% endif %}>Critical</option>
+                    </select>
+                    <button class="btn-sm" id="updatePriorityBtn" type="button">Update</button>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Image Attachment -->
+            <div style="margin-bottom: 24px;">
+                {% if ticket.image %}
+                <h3>Attachment</h3>
+                <div style="border: 1px solid #eee; padding: 10px; display: inline-block; border-radius: 8px;">
+                    <img src="{{ url_for('tickets.get_ticket_image', ticket_id=ticket.ticketID) }}" alt="Ticket Attachment" style="max-width: 100%; max-height: 500px; border-radius: 4px;">
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  document.getElementById('logoutBtn').addEventListener('click', async function() {
+    try {
+      const response = await fetch('/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+      if (response.ok) window.location.href = result.redirect;
+    } catch (error) {
+      alert("Network error while logging out.");
+    }
+  });
+
+  const editDescBtn = document.getElementById('editDescriptionBtn');
+  const descText = document.getElementById('descriptionText');
+  const descForm = document.getElementById('descriptionForm');
+  const cancelDescBtn = document.getElementById('cancelDescriptionBtn');
+  const updatePriorityBtn = document.getElementById('updatePriorityBtn');
+  const prioritySelect = document.getElementById('prioritySelect');
+
+  if (editDescBtn) {
+    editDescBtn.addEventListener('click', () => {
+      descText.style.display = 'none';
+      descForm.style.display = 'block';
+      editDescBtn.style.display = 'none';
+    });
+  }
+
+  if (cancelDescBtn) {
+    cancelDescBtn.addEventListener('click', () => {
+      descText.style.display = 'block';
+      descForm.style.display = 'none';
+      editDescBtn.style.display = 'block';
+    });
+  }
+
+  if (descForm) {
+    descForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newDesc = document.getElementById('descriptionInput').value;
+      
+      try {
+        const response = await fetch('/tickets/{{ ticket.ticketID }}', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description: newDesc })
+        });
+        
+        if (response.ok) {
+           window.location.reload();
+        } else {
+           alert("Failed to update description.");
+        }
+      } catch (error) {
+        alert("Network error.");
+      }
+    });
+  }
+
+  if (updatePriorityBtn) {
+    updatePriorityBtn.addEventListener('click', async () => {
+      const newPriority = prioritySelect.value;
+      
+      try {
+        const response = await fetch('/tickets/{{ ticket.ticketID }}', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ priority: newPriority })
+        });
+        
+        if (response.ok) {
+           window.location.reload();
+        } else {
+           alert("Failed to update priority.");
+        }
+      } catch (error) {
+        alert("Network error.");
+      }
+    });
+  }
+
+  // Claim Ticket Logic
+  document.querySelectorAll('.claim-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const ticketId = btn.getAttribute('data-id');
+          
+          try {
+              const response = await fetch(`/tickets/${ticketId}/assign`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' }
+              });
+              
+              const data = await response.json();
+              if(response.ok) {
+                  window.location.reload();
+              } else {
+                  alert(data.error || 'Failed to claim ticket');
+              }
+          } catch (error) {
+              console.error(error);
+              alert('Network error');
+          }
+      });
+  });
+
+  // Delete Ticket Logic
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const ticketId = btn.getAttribute('data-id');
+          
+          try {
+              const response = await fetch(`/tickets/${ticketId}`, {
+                  method: 'DELETE',
+                  headers: { 'Content-Type': 'application/json' }
+              });
+              
+              const data = await response.json();
+              if(response.ok) {
+                  window.location.href = "{{ url_for('tickets.get_tickets') }}";
+              } else {
+                  alert(data.error || 'Failed to delete ticket');
+              }
+          } catch (error) {
+              console.error(error);
+              alert('Network error');
+          }
+      });
+  });
+</script>
+{% endblock %}
