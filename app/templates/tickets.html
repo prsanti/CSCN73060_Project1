@@ -248,7 +248,7 @@
     </div>
 
     <div class="modal-body">
-      <form method="POST" action="{{ url_for('tickets.create_ticket') }}" enctype="multipart/form-data">
+      <form id="createTicketForm" method="POST" enctype="multipart/form-data">
 
         <div class="modal-field">
           <label class="modal-label">Title *</label>
@@ -354,6 +354,29 @@
       closeModal();
     }
   });
+
+  const createTicketForm = document.getElementById("createTicketForm");
+  if(createTicketForm) {
+      createTicketForm.addEventListener("submit", async function(e){
+          e.preventDefault();
+          const formData = new FormData(createTicketForm);
+
+          try {
+              const response = await fetch('/tickets/', {
+                  method: 'POST',
+                  body: formData
+              });
+              const result = await response.json();
+              if (response.ok) {
+                 window.location.reload();
+              } else {
+                  alert("Error creating ticket: " + (result.error || "Unknown error"));
+              }
+          } catch(error) {
+              alert("Network error while creating ticket.");
+          }
+      });
+  }
 
 </script>
 {% endblock %}
