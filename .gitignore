@@ -24,3 +24,7 @@ instance/project6.db
 
 .DS_Store
 app/.DS_Store
+
+./search_terms.csv
+./test_users.csv
+./*.csv

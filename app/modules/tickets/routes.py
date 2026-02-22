@@ -82,7 +82,7 @@ def get_tickets():
 def create_ticket():
     # check if user is logged in
     if 'user_id' not in session:
-        return redirect(url_for('auth.login')), 302
+        return jsonify({'error': 'Unauthorized'}), 401
 
     # get title, desc, and priority
     title = request.form.get('title', '').strip()
@@ -90,8 +90,7 @@ def create_ticket():
     priority = request.form.get('priority', '').strip().lower()
 
     if not title or not description or not priority:
-        # simplest behavior: send them back
-        return redirect(url_for('tickets.get_tickets'))
+        return jsonify({'error': 'Missing required fields'}), 400
 
     image_data = None
     if 'attachment' in request.files:
@@ -109,8 +108,7 @@ def create_ticket():
     db.session.add(new_ticket)
     db.session.commit()
 
-    # Go back to tickets list after submit
-    return redirect(url_for('tickets.get_tickets'))
+    return jsonify({'message': 'Ticket created successfully', 'ticket_id': new_ticket.ticketID}), 201
 
 # get individual ticket route
 @ticket_bp.route('/<int:ticket_id>', methods=['GET', 'OPTIONS'])
