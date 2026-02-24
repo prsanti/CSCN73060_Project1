@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, request, jsonify, session, redirec
 from sqlalchemy import case, asc, desc
 from modules.database.database import db
 from models import Ticket
+from sqlalchemy.orm import defer
 
 ticket_bp = Blueprint('tickets', __name__)
 
@@ -15,7 +16,9 @@ def get_tickets():
         return redirect(url_for('auth.login')), 302
         
     # query all tickets
-    query = Ticket.query
+    #defer (lazy load) ticket images to increase performance
+    # only show non deleted tickets
+    query = Ticket.query.filter(Ticket.is_deleted == False).options(defer(Ticket.image))
 
     # If user is an employee, only show their tickets
     if session.get('role') == 'employee':
@@ -27,9 +30,10 @@ def get_tickets():
         query = query.filter(Ticket.title.ilike(f'%{title_query}%'))
 
     # filter by priority
+    #altered to utilize database indexes
     priority_query = request.args.get('priority')
     if priority_query:
-        query = query.filter(Ticket.priority.ilike(priority_query))
+        query = query.filter(Ticket.priority == priority_query.lower())
 
     # sort by and order
     # default by date and desc
@@ -142,7 +146,7 @@ def get_ticket_detail(ticket_id):
     
     # query ticket by id
     ticket = Ticket.query.get(ticket_id)
-    if not ticket:
+    if not ticket or ticket.is_deleted is True:
         return redirect(url_for('tickets.get_tickets'))
         
     # render ticket page
@@ -154,27 +158,40 @@ def update_ticket(ticket_id):
     if 'user_id' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
     
-    ticket = Ticket.query.get(ticket_id)
-    if not ticket:
-        return jsonify({'error': 'Ticket not found'}), 404
-    
     current_user_id = session.get('user_id')
     role = session.get('role')
     
     # check permissions if user is the creator or a technician
-    if role == 'employee' and ticket.employeeID != current_user_id:
-         return jsonify({'error': 'Unauthorized'}), 403
+    # if role == 'employee' and ticket.employeeID != current_user_id:
+    #      return jsonify({'error': 'Unauthorized'}), 403
 
     data = request.get_json()
-    
+
+    # create updated ticket data before getting ticket from database
+    update_data = {}
     if 'description' in data:
-        ticket.description = data['description'].strip()
+        update_data['description'] = data['description'].strip()
     
     if 'priority' in data:
         priority = data['priority'].strip().lower()
         if priority in ['low', 'medium', 'high', 'critical']:
-            ticket.priority = priority
+            update_data['priority'] = priority
             
+    if not update_data:
+        return jsonify({'message': 'No changes provided'}), 400
+    
+    # combine check for ticket and update ticket
+    query = Ticket.query.filter(Ticket.ticketID == ticket_id, Ticket.is_deleted == False)
+    
+    # check perms using sql filter
+    if role == 'employee':
+        query = query.filter(Ticket.employeeID == current_user_id)
+
+    #check if ticket updated
+    updated_count = query.update(update_data)
+    if updated_count == 0:
+        return jsonify({'error': 'Ticket not found or Unauthorized'}), 404
+    
     try:
         db.session.commit()
         return jsonify({'message': 'Ticket updated successfully'}), 200
@@ -193,15 +210,13 @@ def assign_ticket(ticket_id):
     if session.get('role') != 'technician':
         return jsonify({'error': 'Unauthorized: Only technicians can assign tickets'}), 403
     
-    # get ticket by id
-    ticket = Ticket.query.get(ticket_id)
-    if not ticket:
-        return jsonify({'error': 'Ticket not found'}), 404
+    # assign ticket to user id without fully loading it in the db
+    db.session.query(Ticket).filter_by(ticketID=ticket_id, is_deleted=False).update({
+            "technicianID": session.get('user_id'),
+            "isAssigned": True
+        })
         
     try:
-        # assign ticket to user id
-        ticket.technicianID = session.get('user_id')
-        ticket.isAssigned = True
         # commit to db
         db.session.commit()
         return jsonify({'message': 'Ticket assigned successfully'}), 200
@@ -217,21 +232,29 @@ def delete_ticket(ticket_id):
         return jsonify({'error': 'Unauthorized'}), 401
     
     # get ticket
-    ticket = Ticket.query.get(ticket_id)
-    if not ticket:
-        return jsonify({'error': 'Ticket not found'}), 404
+    # ticket = Ticket.query.get(ticket_id)
+    # if not ticket:
+    #     return jsonify({'error': 'Ticket not found'}), 404
         
     # get user role and id
     current_user_id = session.get('user_id')
     role = session.get('role')
     
+    query = Ticket.query.filter(Ticket.ticketID == ticket_id, Ticket.is_deleted == False)
+
     # Check permissions if user is the creator or a technician
-    if role == 'employee' and ticket.employeeID != current_user_id:
-        return jsonify({'error': 'Unauthorized'}), 403
+    # if role == 'employee' and ticket.employeeID != current_user_id:
+    #     return jsonify({'error': 'Unauthorized'}), 403
+    if role == 'employee':
+        query = query.filter(Ticket.employeeID == current_user_id)
+    
+    #update ticket directly in db
+    updated_count = query.update({"is_deleted": True})
+    if updated_count == 0:
+        return jsonify({'error': 'Ticket not found or Unauthorized'}), 404
     
     try:
         # delete ticket from db
-        db.session.delete(ticket)
         db.session.commit()
         return jsonify({'message': 'Ticket deleted successfully'}), 200
     except Exception as e:
