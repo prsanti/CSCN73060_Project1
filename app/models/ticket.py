@@ -1,5 +1,6 @@
 from modules.database.database import db
 from datetime import datetime
+from sqlalchemy.orm import deferred
 
 class Ticket(db.Model):
     __tablename__ = 'tickets'
@@ -15,7 +16,7 @@ class Ticket(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Large Binary = Blob
-    image = db.Column(db.LargeBinary, nullable=True)
+    image = deferred(db.Column(db.LargeBinary, nullable=True))
 
     isAssigned = db.Column(db.Boolean, default=False)
     

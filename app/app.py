@@ -11,7 +11,7 @@ from modules.tickets.routes import ticket_bp
 app = Flask(__name__)
 
 # db configured with sqlite
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project6.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project6.db?timeout=30'
 app.config['SECRET_KEY'] = os.urandom(24) # for session security
 
 
@@ -24,9 +24,9 @@ app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(ticket_bp, url_prefix='/tickets')
 
 # create all tables
-#with app.app_context():
+with app.app_context():
     #seed tables with fake data
-#    seed_data()
+    seed_data()
 
 @app.route('/')
 def home():

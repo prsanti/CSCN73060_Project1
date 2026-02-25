@@ -2,6 +2,7 @@ import io
 from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, send_file, make_response
 
 from sqlalchemy import case, asc, desc
+from sqlalchemy.orm import joinedload
 from modules.database.database import db
 from models import Ticket
 
@@ -15,8 +16,8 @@ def get_tickets():
         return redirect(url_for('auth.login')), 302
         
     # query all tickets
-    query = Ticket.query
-
+    query = Ticket.query.options(joinedload(Ticket.employee), joinedload(Ticket.technician))
+    #query = Ticket.query
     # If user is an employee, only show their tickets
     if session.get('role') == 'employee':
         query = query.filter(Ticket.employeeID == session.get('user_id'))
