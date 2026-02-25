@@ -58,11 +58,11 @@ def seed_data():
    
     # generate 50 technicians
     for i in range(50):
-        users.append(User(username=fake.name(), password='123', role='technician'))
+        users.append(User(username=fake.unique.name(), password='123', role='technician'))
 
     # generate 450 Employees
     for i in range(450):
-        users.append(User(username=fake.name(), password='123', role='employee'))
+        users.append(User(username=fake.unique.name(), password='123', role='employee'))
 
     # export users to csv for Jmeter testing
     print("Exporting users to test_users.csv...")
