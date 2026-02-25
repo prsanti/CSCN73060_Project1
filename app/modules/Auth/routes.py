@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, session
 from modules.database.database import db
 from models import User 
 from flask import redirect
+from sqlalchemy.exc import IntegrityError
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -45,21 +46,33 @@ def sign_up():
         if not data or 'username' not in data or 'password' not in data:
             return jsonify({'error': 'Missing username and/or password'}), 400
         
-        username = data['username']
-        password = data['password']
+        # username = data['username']
+        # password = data['password']
         
-        # Check if username exists
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            return jsonify({'error': 'Username already exists'}), 409
+        # # Check if username exists
+        # existing_user = User.query.filter_by(username=username).first()
+        # if existing_user:
+        #     return jsonify({'error': 'Username already exists'}), 409
         
-        # Create new user 
-        new_user = User(username=username, password=password, role='employee')
+        # # Create new user 
+        # new_user = User(username=username, password=password, role='employee')
         
+        # make new_user from json data instead of making new variables
+        new_user = User(
+            username=data['username'].strip(), 
+            password=data['password'], 
+            role='employee'
+        )
+
         try:
             db.session.add(new_user)
             db.session.commit()
             return jsonify({'message': 'User created successfully', 'redirect': '/auth/login'}), 201
+        
+        # gives error if username already exists
+        except IntegrityError:
+            db.session.rollback()
+            return jsonify({'error': 'Username already exists'}), 409
         except Exception as e:
             db.session.rollback()
             return jsonify({'error': 'Database error'}), 500
